@@ -1,0 +1,6 @@
+.DS_Store
+
+**/docker.local/0proxy*
+**/zproxy/zproxy/zproxy
+**/pkg/
+

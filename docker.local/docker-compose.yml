@@ -1,0 +1,31 @@
+version: "3"
+services:
+  0proxy:
+    environment:
+      - DOCKER=true
+    build:
+      context: ../
+      dockerfile: ./docker.local/Dockerfile
+    volumes:
+      - ./config:/0proxy/config
+      - ./0proxy/certs:/0proxy/certs
+      - ./0proxy/data:/0proxy/data
+      - ./0proxy/log:/0proxy/log
+    ports:
+      - "9082:9082"
+    networks:
+      default:
+      testnet0:
+        ipv4_address: 198.18.0.98
+    command: ./bin/zproxy --deployment_mode 0
+
+networks:
+  default:
+    driver: bridge
+  testnet0:
+    external: true
+
+volumes:
+  data:
+  config:
+  bin:
