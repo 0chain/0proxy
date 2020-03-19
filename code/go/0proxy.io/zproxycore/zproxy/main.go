@@ -23,10 +23,6 @@ func initializeConfig() {
 	config.Configuration.ChainID = viper.GetString("server_chain.id")
 	config.Configuration.SignatureScheme = viper.GetString("server_chain.signature_scheme")
 	config.Configuration.Port = viper.GetInt("port")
-	config.Configuration.DataShards = viper.GetInt("allocation_default.data_shards")
-	config.Configuration.ParityShards = viper.GetInt("allocation_default.parity_shards")
-	config.Configuration.MinSubmit = viper.GetInt("allocation_default.min_submit")
-	config.Configuration.MinConfirmation = viper.GetInt("allocation_default.min_confirmation")
 	config.Configuration.Miners = viper.GetStringSlice("miners")
 	config.Configuration.Sharders = viper.GetStringSlice("sharders")
 }

@@ -33,15 +33,10 @@ const (
 
 /*Config - all the config options passed from the command line*/
 type Config struct {
-	Host            string
 	Port            int
 	ChainID         string
 	DeploymentMode  byte
 	SignatureScheme string
-	MinSubmit       int
-	MinConfirmation int
-	DataShards      int
-	ParityShards    int
 	Miners          []string
 	Sharders        []string
 }

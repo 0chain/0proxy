@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+const filesRepo = "files/"
+
 func writeFile(file multipart.File, filePath string) (string, error) {
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
@@ -27,11 +29,11 @@ func readFile(filePath string) ([]byte, error) {
 }
 
 func getPath(allocation, fileName string) string {
-	return "./" + allocation + "/" + fileName
+	return filesRepo + allocation + "/" + fileName
 }
 
 func createDirIfNotExists(allocation string) {
-	allocationDir := "./" + allocation
+	allocationDir := filesRepo + allocation
 	if _, err := os.Stat(allocationDir); os.IsNotExist(err) {
 		os.Mkdir(allocationDir, 0777)
 	}

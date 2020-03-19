@@ -8,8 +8,7 @@ services:
       dockerfile: ./docker.local/Dockerfile
     volumes:
       - ./config:/0proxy/config
-      - ./0proxy/certs:/0proxy/certs
-      - ./0proxy/data:/0proxy/data
+      - ./0proxy/files:/0proxy/files
       - ./0proxy/log:/0proxy/log
     ports:
       - "9082:9082"
@@ -26,6 +25,6 @@ networks:
     external: true
 
 volumes:
-  data:
+  files:
   config:
   bin:
