@@ -29,7 +29,7 @@ RUN go mod download
 # Add the source code:
 ADD ./code/go/0proxy.io $SRC_DIR/go/0proxy.io
 
-RUN go build -v -tags "bn256 development" -ldflags "-X 0proxy.io/core/build.BuildTag=$GIT_COMMIT"
+RUN go build -v -tags "bn256 development" -ldflags "-X 0chain.net/core/build.BuildTag=$GIT_COMMIT"
 
 # Copy the build artifact into a minimal runtime image:
 FROM golang:1.11.4-alpine3.8
@@ -37,7 +37,7 @@ ENV APP_DIR=/0proxy
 WORKDIR $APP_DIR
 RUN apk add gmp gmp-dev openssl-dev
 COPY --from=zproxy_build  /usr/local/lib/libmcl*.so \
-                        /usr/local/lib/libbls*.so \
-                        /usr/local/lib/
+    /usr/local/lib/libbls*.so \
+    /usr/local/lib/
 COPY --from=zproxy_build $APP_DIR/go/0proxy.io/zproxycore/zproxy/zproxy $APP_DIR/bin/zproxy
 

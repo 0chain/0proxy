@@ -11,10 +11,12 @@ import (
 	"0proxy.io/core/common"
 	"0proxy.io/core/config"
 	"0proxy.io/core/logging"
+	. "0proxy.io/core/logging"
 	zc "0proxy.io/zproxycore/common"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 func initializeConfig() {
@@ -80,11 +82,11 @@ func main() {
 
 	initHandlers(r)
 	startTime = time.Now().UTC()
-
-	fmt.Println("Listening on port", address)
+	Logger.Info("Ready to listen to the requests on ", zap.Any("port", config.Configuration.Port))
 	log.Fatal(server.ListenAndServe())
 }
 
+// HomePageHandler for 0proxy
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<div>Running since %v ...\n", startTime)
 	fmt.Fprintf(w, "<div>Working on the chain: %v</div>\n", config.Configuration.ChainID)

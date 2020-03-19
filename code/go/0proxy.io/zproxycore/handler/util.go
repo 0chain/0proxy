@@ -5,10 +5,19 @@ import (
 	"os"
 	"sync"
 
+	"0proxy.io/core/common"
 	"0proxy.io/core/config"
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	"gopkg.in/cheggaaa/pb.v1"
 )
+
+type response struct {
+	Message string `json:"message"`
+}
+
+func methodError(endpoint, method string) error {
+	return common.NewError("invalid_method", fmt.Sprintf("Invalid method for %s endpoint, Use %s", endpoint, method))
+}
 
 func initSDK(clientJSON string) error {
 	return sdk.InitStorageSDK(clientJSON,
@@ -19,15 +28,26 @@ func initSDK(clientJSON string) error {
 		nil)
 }
 
-func (s *StatusBar) Started(allocationId, filePath string, op int, totalBytes int) {
+func validateClientDetails(allocation, clientJSON string) error {
+	if len(allocation) == 0 || len(clientJSON) == 0 {
+		return common.NewError("invalid_param", "Please provide allocation and client_json for the client")
+	}
+	return nil
+}
+
+// Started for statusBar
+func (s *StatusBar) Started(allocationID, filePath string, op int, totalBytes int) {
 	s.b = pb.StartNew(totalBytes)
 	s.b.Set(0)
 }
-func (s *StatusBar) InProgress(allocationId, filePath string, op int, completedBytes int) {
+
+// InProgress for statusBar
+func (s *StatusBar) InProgress(allocationID, filePath string, op int, completedBytes int) {
 	s.b.Set(completedBytes)
 }
 
-func (s *StatusBar) Completed(allocationId, filePath string, filename string, mimetype string, size int, op int) {
+// Completed for statusBar
+func (s *StatusBar) Completed(allocationID, filePath string, filename string, mimetype string, size int, op int) {
 	if s.b != nil {
 		s.b.Finish()
 	}
@@ -36,6 +56,7 @@ func (s *StatusBar) Completed(allocationId, filePath string, filename string, mi
 	fmt.Println("Status completed callback. Type = " + mimetype + ". Name = " + filename)
 }
 
+// Error for statusBar
 func (s *StatusBar) Error(allocationID string, filePath string, op int, err error) {
 	if s.b != nil {
 		s.b.Finish()
@@ -45,10 +66,12 @@ func (s *StatusBar) Error(allocationID string, filePath string, op int, err erro
 	PrintError("Error in file operation." + err.Error())
 }
 
+// PrintError is to print error
 func PrintError(v ...interface{}) {
 	fmt.Fprintln(os.Stderr, v...)
 }
 
+// StatusBar is to check status of any operation
 type StatusBar struct {
 	b       *pb.ProgressBar
 	wg      *sync.WaitGroup

@@ -66,6 +66,7 @@ func validOrigin(origin string) bool {
 	if err != nil {
 		return false
 	}
+
 	if host == "localhost" || strings.HasPrefix(host, "file") {
 		return true
 	}
@@ -87,12 +88,13 @@ func CheckCrossOrigin(w http.ResponseWriter, r *http.Request) bool {
 	}
 	if validOrigin(origin) {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
+		setupCORSResponse(w, r)
 		return true
 	}
 	return false
 }
 
-func SetupCORSResponse(w http.ResponseWriter, r *http.Request) {
+func setupCORSResponse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type")
 }

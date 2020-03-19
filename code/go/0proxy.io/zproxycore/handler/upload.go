@@ -6,29 +6,42 @@ import (
 	"strconv"
 	"sync"
 
-	"0proxy.io/zproxycore/common"
+	"0proxy.io/core/common"
+	. "0proxy.io/core/logging"
 	"github.com/0chain/gosdk/zboxcore/sdk"
+	"go.uber.org/zap"
 )
 
+// Upload is to upload file to dStorage
 func Upload(ctx context.Context, r *http.Request) (interface{}, error) {
-	if r.Method != http.MethodPost || r.Method != http.MethodPut {
-		return nil, common.NewError("invalid_method", "Invalid method for upload endpoint, Use POST or PUT.")
+	if r.Method != http.MethodPost && r.Method != http.MethodPut {
+		return nil, methodError("upload", http.MethodPost)
 	}
+
 	allocation := r.FormValue("allocation")
 	clientJSON := r.FormValue("client_json")
-	remotePath := r.FormValue("remote_path")
-	encrypt := r.FormValue("encrypt")
-	file, fileHeader, err := r.FormFile("file")
+	err := validateClientDetails(allocation, clientJSON)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
 
-	common.CreateDirIfNotExists(allocation)
+	remotePath := r.FormValue("remote_path")
+	if len(remotePath) == 0 {
+		return nil, common.NewError("invalid_param", "Please provide remote_path for upload")
+	}
 
-	localFilePath, err := common.WriteFile(file, common.GetPath(allocation, fileHeader.Filename))
+	file, fileHeader, err := r.FormFile("file")
 	if err != nil {
-		return nil, err
+		return nil, common.NewError("invalid_params", "Unable to get file for upload :"+err.Error())
+	}
+	defer file.Close()
+	encrypt := r.FormValue("encrypt")
+
+	createDirIfNotExists(allocation)
+
+	localFilePath, err := writeFile(file, getPath(allocation, fileHeader.Filename))
+	if err != nil {
+		return nil, common.NewError("write_local_temp_file_failed", err.Error())
 	}
 
 	err = initSDK(clientJSON)
@@ -38,7 +51,7 @@ func Upload(ctx context.Context, r *http.Request) (interface{}, error) {
 
 	allocationObj, err := sdk.GetAllocation(allocation)
 	if err != nil {
-		return nil, err
+		return nil, common.NewError("get_allocation_failed", err.Error())
 	}
 
 	wg := &sync.WaitGroup{}
@@ -47,25 +60,32 @@ func Upload(ctx context.Context, r *http.Request) (interface{}, error) {
 	if r.Method == http.MethodPost {
 		encryptBool, _ := strconv.ParseBool(encrypt)
 		if encryptBool {
+			Logger.Info("Doing encrypted file upload with", zap.Any("remotepath", remotePath), zap.Any("allocation", allocationObj.ID))
 			err = allocationObj.EncryptAndUploadFile(localFilePath, remotePath, statusBar)
 		} else {
+			Logger.Info("Doing file upload with", zap.Any("remotepath", remotePath), zap.Any("allocation", allocationObj.ID))
 			err = allocationObj.UploadFile(localFilePath, remotePath, statusBar)
 		}
 	} else {
+		Logger.Info("Doing file update with", zap.Any("remotepath", remotePath), zap.Any("allocation", allocationObj.ID))
 		err = allocationObj.UpdateFile(localFilePath, remotePath, statusBar)
 	}
 	if err != nil {
-		return nil, common.NewError("upload_failed", "Upload failed")
+		return nil, common.NewError("upload_file_failed", err.Error())
 	}
 
 	wg.Wait()
 	if !statusBar.success {
-		return nil, common.NewError("upload_failed", "Upload failed")
+		return nil, common.NewError("upload_status_failed", "Status bar not success")
 	}
-	err = common.DeleletFile(localFilePath)
-	var response struct {
-		Message string `json:"msg"`
+
+	err = deleletFile(localFilePath)
+	if err != nil {
+		Logger.Error("Upload done successfully but unable to delete local file", zap.Any("file_path", localFilePath))
 	}
-	response.Message = "Upload done"
-	return response, err
+
+	resp := response{
+		Message: "Upload done successfully",
+	}
+	return resp, nil
 }
