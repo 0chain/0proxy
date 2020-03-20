@@ -7,9 +7,15 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
+
+var proxyAvailable = true
+
+var proxyNotAvailableError = NewError("proxy_busy", "Proxy is busy at the moment, Please try again in some time")
 
 /*AppErrorHeader - a http response header to send an application error code */
 const AppErrorHeader = "X-App-Error-Code"
@@ -61,6 +67,18 @@ func getHost(origin string) (string, error) {
 	return url.Hostname(), err
 }
 
+func lockProxy() {
+	proxyAvailable = false
+}
+
+func unlockProxy() {
+	proxyAvailable = true
+}
+
+func proxyStaus() bool {
+	return proxyAvailable
+}
+
 func validOrigin(origin string) bool {
 	host, err := getHost(origin)
 	if err != nil {
@@ -109,18 +127,42 @@ func ToJSONResponse(handler JSONResponderF) ReqRespHandlerf {
 		if !CheckCrossOrigin(w, r) {
 			return
 		}
-		ctx := r.Context()
-		data, err := handler(ctx, r)
-		Respond(w, data, err)
+		if proxyStaus() {
+			lockProxy()
+			ctx := r.Context()
+			data, err := handler(ctx, r)
+			unlockProxy()
+			Respond(w, data, err)
+		} else {
+			Respond(w, nil, proxyNotAvailableError)
+		}
 	}
 }
 
-func ToFileResponse(handler ReqRespHandlerf) ReqRespHandlerf {
+// ToFileResponse to give file as response
+func ToFileResponse(handler JSONResponderF) ReqRespHandlerf {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !CheckCrossOrigin(w, r) {
 			return
 		}
-		handler(w, r)
+
+		if proxyStaus() {
+			lockProxy()
+			ctx := r.Context()
+			data, err := handler(ctx, r)
+			unlockProxy()
+			if err != nil {
+				Respond(w, data, err)
+			} else {
+				filePath := data.(string)
+				fileName := filepath.Base(filePath)
+				w.Header().Add("Content-Disposition", fmt.Sprintf("Attachment; filename=%s", fileName))
+				http.ServeFile(w, r, filePath)
+				os.RemoveAll(filePath)
+			}
+		} else {
+			Respond(w, nil, proxyNotAvailableError)
+		}
 	}
 }
 

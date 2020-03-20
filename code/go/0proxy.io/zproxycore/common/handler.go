@@ -52,6 +52,6 @@ func Copy(ctx context.Context, r *http.Request) (interface{}, error) {
 }
 
 // Download is to download a file
-func Download(w http.ResponseWriter, r *http.Request) {
-	handler.Download(w, r)
+func Download(ctx context.Context, r *http.Request) (interface{}, error) {
+	return handler.Download(ctx, r)
 }
