@@ -47,6 +47,7 @@ func main() {
 		logging.InitLogging("production")
 	}
 	initializeConfig()
+	common.ConfigRateLimits()
 
 	common.SetupRootContext(context.Background())
 

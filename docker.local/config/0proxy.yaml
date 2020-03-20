@@ -10,6 +10,9 @@ server_chain:
 
 port: 9082
 
+handlers:
+  rate_limit: 1 # 1 per second
+
 miners:
   - http://one.devnet-0chain.net:31071
   - http://one.devnet-0chain.net:31072

@@ -12,13 +12,13 @@ import (
 
 // SetupHandlers is to setup handlers
 func SetupHandlers(r *mux.Router) {
-	r.HandleFunc("/upload", common.ToJSONResponse(Upload))
-	r.HandleFunc("/download", common.ToFileResponse(Download))
-	r.HandleFunc("/delete", common.ToJSONResponse(Delete))
-	r.HandleFunc("/share", common.ToJSONResponse(Share))
-	r.HandleFunc("/copy", common.ToJSONResponse(Copy))
-	r.HandleFunc("/rename", common.ToJSONResponse(Rename))
-	r.HandleFunc("/move", common.ToJSONResponse(Move))
+	r.HandleFunc("/upload", common.UserRateLimit(common.ToJSONResponse(Upload)))
+	r.HandleFunc("/download", common.UserRateLimit(common.ToFileResponse(Download)))
+	r.HandleFunc("/delete", common.UserRateLimit(common.ToJSONResponse(Delete)))
+	r.HandleFunc("/share", common.UserRateLimit(common.ToJSONResponse(Share)))
+	r.HandleFunc("/copy", common.UserRateLimit(common.ToJSONResponse(Copy)))
+	r.HandleFunc("/rename", common.UserRateLimit(common.ToJSONResponse(Rename)))
+	r.HandleFunc("/move", common.UserRateLimit(common.ToJSONResponse(Move)))
 }
 
 // Upload is for file upload
