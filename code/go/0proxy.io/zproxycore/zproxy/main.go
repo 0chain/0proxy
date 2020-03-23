@@ -57,7 +57,7 @@ func main() {
 	r := mux.NewRouter()
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
 	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "DELETE", "POST", "PUT", "OPTIONS"})
 	rHandler := handlers.CORS(originsOk, headersOk, methodsOk)(r)
 	if config.Development() {
 		server = &http.Server{
