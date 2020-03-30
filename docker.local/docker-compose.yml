@@ -15,7 +15,7 @@ services:
     networks:
       default:
       testnet0:
-        ipv4_address: 198.18.0.98
+        ipv4_address: 198.18.0.99
     command: ./bin/zproxy --deployment_mode 0
 
 networks:
