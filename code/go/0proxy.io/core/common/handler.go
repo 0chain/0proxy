@@ -104,15 +104,15 @@ func CheckCrossOrigin(w http.ResponseWriter, r *http.Request) bool {
 	if origin == "" {
 		return true
 	}
+
 	if validOrigin(origin) {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
-		setupCORSResponse(w, r)
 		return true
 	}
 	return false
 }
 
-func setupCORSResponse(w http.ResponseWriter, r *http.Request) {
+func SetupCORSResponse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type")
 }
@@ -127,6 +127,12 @@ func ToJSONResponse(handler JSONResponderF) ReqRespHandlerf {
 		if !CheckCrossOrigin(w, r) {
 			return
 		}
+
+		if r.Method == "OPTIONS" {
+			SetupCORSResponse(w, r)
+			return
+		}
+
 		if proxyStaus() {
 			lockProxy()
 			ctx := r.Context()
@@ -143,6 +149,11 @@ func ToJSONResponse(handler JSONResponderF) ReqRespHandlerf {
 func ToFileResponse(handler JSONResponderF) ReqRespHandlerf {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !CheckCrossOrigin(w, r) {
+			return
+		}
+
+		if r.Method == "OPTIONS" {
+			SetupCORSResponse(w, r)
 			return
 		}
 
