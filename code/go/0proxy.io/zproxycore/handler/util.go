@@ -62,8 +62,17 @@ func (s *StatusBar) Error(allocationID string, filePath string, op int, err erro
 		s.b.Finish()
 	}
 	s.success = false
-	defer s.wg.Done()
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in statusBar Error", r)
+		}
+	}()
 	PrintError("Error in file operation." + err.Error())
+	s.wg.Done()
+}
+
+// CommitMetaCompleted when commit meta completes
+func (s *StatusBar) CommitMetaCompleted(request, response string, err error) {
 }
 
 // PrintError is to print error
