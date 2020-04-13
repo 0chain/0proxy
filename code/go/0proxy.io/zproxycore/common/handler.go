@@ -19,6 +19,7 @@ func SetupHandlers(r *mux.Router) {
 	r.HandleFunc("/copy", common.UserRateLimit(common.ToJSONResponse(Copy)))
 	r.HandleFunc("/rename", common.UserRateLimit(common.ToJSONResponse(Rename)))
 	r.HandleFunc("/move", common.UserRateLimit(common.ToJSONResponse(Move)))
+	r.HandleFunc("/publicEncryptionKey", common.UserRateLimit(common.ToJSONResponse(PublicEncryptionKey)))
 }
 
 // Upload is for file upload
@@ -54,4 +55,9 @@ func Copy(ctx context.Context, r *http.Request) (interface{}, error) {
 // Download is to download a file
 func Download(ctx context.Context, r *http.Request) (interface{}, error) {
 	return handler.Download(ctx, r)
+}
+
+// PublicEncryptionKey is to get public encryption key for the client
+func PublicEncryptionKey(ctx context.Context, r *http.Request) (interface{}, error) {
+	return handler.GetPublicEncryptionKey(ctx, r)
 }
