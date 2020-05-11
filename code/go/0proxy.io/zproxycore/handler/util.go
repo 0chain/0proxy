@@ -75,6 +75,14 @@ func (s *StatusBar) Error(allocationID string, filePath string, op int, err erro
 func (s *StatusBar) CommitMetaCompleted(request, response string, err error) {
 }
 
+// RepairCompleted when repair is completed
+func (s *StatusBar) RepairCompleted(filesRepaired int) {
+}
+
+// RepairCancelled when repair is cancelled
+func (s *StatusBar) RepairCancelled(err error) {
+}
+
 // PrintError is to print error
 func PrintError(v ...interface{}) {
 	fmt.Fprintln(os.Stderr, v...)
