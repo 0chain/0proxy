@@ -37,8 +37,7 @@ type Config struct {
 	ChainID         string
 	DeploymentMode  byte
 	SignatureScheme string
-	Miners          []string
-	Sharders        []string
+	BlockWorker     string
 }
 
 /*Configuration of the system */

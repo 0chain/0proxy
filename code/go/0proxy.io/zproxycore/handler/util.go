@@ -21,8 +21,7 @@ func methodError(endpoint, method string) error {
 
 func initSDK(clientJSON string) error {
 	return sdk.InitStorageSDK(clientJSON,
-		config.Configuration.Miners,
-		config.Configuration.Sharders,
+		config.Configuration.BlockWorker,
 		config.Configuration.ChainID,
 		config.Configuration.SignatureScheme,
 		nil)
@@ -77,10 +76,6 @@ func (s *StatusBar) CommitMetaCompleted(request, response string, err error) {
 
 // RepairCompleted when repair is completed
 func (s *StatusBar) RepairCompleted(filesRepaired int) {
-}
-
-// RepairCancelled when repair is cancelled
-func (s *StatusBar) RepairCancelled(err error) {
 }
 
 // PrintError is to print error

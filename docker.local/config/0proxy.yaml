@@ -13,11 +13,4 @@ port: 9082
 handlers:
   rate_limit: 1 # 1 per second
 
-miners:
-  - http://one.devnet-0chain.net:31071
-  - http://one.devnet-0chain.net:31072
-  - http://one.devnet-0chain.net:31073
-  - http://one.devnet-0chain.net:31074
-sharders:
-  - http://one.devnet-0chain.net:31171
-  - http://one.devnet-0chain.net:31172
+block_worker: http://198.18.0.98:9091

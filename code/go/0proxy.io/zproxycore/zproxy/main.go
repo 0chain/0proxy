@@ -23,8 +23,7 @@ func initializeConfig() {
 	config.Configuration.ChainID = viper.GetString("server_chain.id")
 	config.Configuration.SignatureScheme = viper.GetString("server_chain.signature_scheme")
 	config.Configuration.Port = viper.GetInt("port")
-	config.Configuration.Miners = viper.GetStringSlice("miners")
-	config.Configuration.Sharders = viper.GetStringSlice("sharders")
+	config.Configuration.BlockWorker = viper.GetString("block_worker")
 }
 func initHandlers(r *mux.Router) {
 	r.HandleFunc("/", HomePageHandler)
@@ -87,6 +86,7 @@ func main() {
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<div>Running since %v ...\n", startTime)
 	fmt.Fprintf(w, "<div>Working on the chain: %v</div>\n", config.Configuration.ChainID)
-	fmt.Fprintf(w, "<div>I am 0proxy with <ul><li>miners:%v</li><li>sharders:%v</li></ul></div>\n",
-		config.Configuration.Miners, config.Configuration.Sharders)
+	fmt.Fprintf(w, "<div>I am 0proxy with <ul><li>blockWorker:%v</li></ul></div>\n", config.Configuration.BlockWorker)
+	fmt.Fprintf(w, "<div>To check network details <a href='%v'>Click here</a>", config.Configuration.BlockWorker+"/network")
+
 }
