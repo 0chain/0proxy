@@ -1,5 +1,8 @@
 # 0proxy
 
+0proxy is used to do CRUD operations on 0chain via web interface using REST APIs. It uses GoSDK internally and exposes the SDK methods in the form of APIs.
+You can find the API documentation on 0chain website.
+
 ## Setup
 
 Clone the repo and run the following command inside the cloned directory
