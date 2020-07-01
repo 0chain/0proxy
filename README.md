@@ -1,7 +1,7 @@
 # 0proxy
 
-0proxy is used to do CRUD operations on 0chain via web interface using REST APIs. It uses GoSDK internally and exposes the SDK methods in the form of APIs.
-You can find the API documentation on 0chain website.
+0proxy is used to do CRUD operations on 0chain via web interface using REST APIs. It uses GoSDK internally and exposes the SDK methods in the form of [APIs](#api).
+You can find the [API documentation](https://0chain.net/page-documentation.html) on 0chain website.
 
 ## Setup
 
@@ -52,3 +52,64 @@ If there is no test network, run the following command
 ```
 docker network create --driver=bridge --subnet=198.18.0.0/15 --gateway=198.18.0.255 testnet0
 ```
+
+## API
+
+### Upload
+
+To upload OR update a file to 0chain network.
+
+Path : `/upload`
+
+Details:
+
+- https://0chain.net/page-documentation.html#tag/0proxy/paths/~1upload/post
+- https://0chain.net/page-documentation.html#tag/0proxy/paths/~1upload/put
+
+### Download
+
+To download a file from 0chain network
+
+Path: `/download`
+
+Details: https://0chain.net/page-documentation.html#tag/0proxy/paths/~1download/get
+
+### Delete
+
+To delete a file from 0chain network
+
+Path: `/delete`
+
+Details: https://0chain.net/page-documentation.html#tag/0proxy/paths/~1delete/delete
+
+### Copy
+
+To copy a file on 0chain network
+
+Path: `/copy`
+
+Details: https://0chain.net/page-documentation.html#tag/0proxy/paths/~1copy/put
+
+### Rename
+
+To rename a file on 0chain network
+
+Path: `/rename`
+
+Details: https://0chain.net/page-documentation.html#tag/0proxy/paths/~1rename/put
+
+### Move
+
+To move a file on 0chain network
+
+Path: `/move`
+
+Details: https://0chain.net/page-documentation.html#tag/0proxy/paths/~1move/put
+
+### Share
+
+To share a file on 0chain network
+
+Path: `/share`
+
+Details: https://0chain.net/page-documentation.html#tag/0proxy/paths/~1share/put
