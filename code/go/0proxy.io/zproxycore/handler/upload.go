@@ -76,7 +76,7 @@ func Upload(ctx context.Context, r *http.Request) (interface{}, error) {
 
 	wg.Wait()
 	if !statusBar.success {
-		return nil, common.NewError("upload_status_failed", "Status bar not success")
+		return nil, statusBar.err
 	}
 
 	err = deleletFile(localFilePath)

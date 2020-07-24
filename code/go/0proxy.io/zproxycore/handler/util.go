@@ -61,6 +61,7 @@ func (s *StatusBar) Error(allocationID string, filePath string, op int, err erro
 		s.b.Finish()
 	}
 	s.success = false
+	s.err = err
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in statusBar Error", r)
@@ -88,4 +89,5 @@ type StatusBar struct {
 	b       *pb.ProgressBar
 	wg      *sync.WaitGroup
 	success bool
+	err     error
 }
