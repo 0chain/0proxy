@@ -43,6 +43,7 @@ func Upload(ctx context.Context, r *http.Request) (interface{}, error) {
 	if err != nil {
 		return nil, common.NewError("write_local_temp_file_failed", err.Error())
 	}
+	defer deleletFile(localFilePath)
 
 	err = initSDK(clientJSON)
 	if err != nil {
@@ -77,11 +78,6 @@ func Upload(ctx context.Context, r *http.Request) (interface{}, error) {
 	wg.Wait()
 	if !statusBar.success {
 		return nil, statusBar.err
-	}
-
-	err = deleletFile(localFilePath)
-	if err != nil {
-		Logger.Error("Upload done successfully but unable to delete local file", zap.Any("file_path", localFilePath))
 	}
 
 	resp := response{

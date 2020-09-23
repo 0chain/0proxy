@@ -68,6 +68,8 @@ func Download(ctx context.Context, r *http.Request) (string, error) {
 
 		createDirIfNotExists(allocationObj.ID)
 		localFilePath = getPath(allocationObj.ID, fileName)
+		deleletFile(localFilePath)
+
 		lookuphash, err := at.GetLookupHash()
 		if err != nil {
 			return "", common.NewError("get_lookuphash_failed", err.Error())
