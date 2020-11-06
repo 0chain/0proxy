@@ -2,12 +2,14 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"sync"
 
 	"0proxy.io/core/common"
 	. "0proxy.io/core/logging"
+	"github.com/0chain/gosdk/zboxcore/fileref"
 	"github.com/0chain/gosdk/zboxcore/sdk"
 	"go.uber.org/zap"
 )
@@ -55,6 +57,15 @@ func Upload(ctx context.Context, r *http.Request) (interface{}, error) {
 		return nil, common.NewError("get_allocation_failed", err.Error())
 	}
 
+	fileAttrs := r.FormValue("file_attrs")
+	var attrs fileref.Attributes
+	if len(fileAttrs) > 0 {
+		err := json.Unmarshal([]byte(fileAttrs), &attrs)
+		if err != nil {
+			return nil, common.NewError("failed_to_parse_file_attrs", err.Error())
+		}
+	}
+
 	wg := &sync.WaitGroup{}
 	statusBar := &StatusBar{wg: wg}
 	wg.Add(1)
@@ -62,14 +73,14 @@ func Upload(ctx context.Context, r *http.Request) (interface{}, error) {
 		encryptBool, _ := strconv.ParseBool(encrypt)
 		if encryptBool {
 			Logger.Info("Doing encrypted file upload with", zap.Any("remotepath", remotePath), zap.Any("allocation", allocationObj.ID))
-			err = allocationObj.EncryptAndUploadFile(localFilePath, remotePath, statusBar)
+			err = allocationObj.EncryptAndUploadFile(localFilePath, remotePath, attrs, statusBar)
 		} else {
 			Logger.Info("Doing file upload with", zap.Any("remotepath", remotePath), zap.Any("allocation", allocationObj.ID))
-			err = allocationObj.UploadFile(localFilePath, remotePath, statusBar)
+			err = allocationObj.UploadFile(localFilePath, remotePath, attrs, statusBar)
 		}
 	} else {
 		Logger.Info("Doing file update with", zap.Any("remotepath", remotePath), zap.Any("allocation", allocationObj.ID))
-		err = allocationObj.UpdateFile(localFilePath, remotePath, statusBar)
+		err = allocationObj.UpdateFile(localFilePath, remotePath, attrs, statusBar)
 	}
 	if err != nil {
 		return nil, common.NewError("upload_file_failed", err.Error())

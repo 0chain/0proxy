@@ -56,6 +56,7 @@ func Download(ctx context.Context, r *http.Request) (string, error) {
 	statusBar := &StatusBar{wg: wg}
 	wg.Add(1)
 	if downloadUsingAT {
+		rxPay, _ := strconv.ParseBool(r.FormValue("rx_pay"))
 		allocationObj, err := sdk.GetAllocationFromAuthTicket(authTicket)
 		if err != nil {
 			return "", common.NewError("get_allocation_failed", err.Error())
@@ -76,7 +77,7 @@ func Download(ctx context.Context, r *http.Request) (string, error) {
 		}
 
 		Logger.Info("Doing file download using authTicket", zap.Any("filename", fileName), zap.Any("allocation", allocationObj.ID), zap.Any("lookuphash", lookuphash))
-		err = allocationObj.DownloadFromAuthTicket(localFilePath, authTicket, lookuphash, fileName, statusBar)
+		err = allocationObj.DownloadFromAuthTicket(localFilePath, authTicket, lookuphash, fileName, rxPay, statusBar)
 		if err != nil {
 			return "", common.NewError("download_from_auth_ticket_failed", err.Error())
 		}
