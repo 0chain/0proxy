@@ -5,12 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
 var proxyAvailable = true
@@ -169,6 +171,39 @@ func ToFileResponse(handler JSONResponderF) ReqRespHandlerf {
 				fileName := filepath.Base(filePath)
 				w.Header().Add("Content-Disposition", fmt.Sprintf("Attachment; filename=%s", fileName))
 				http.ServeFile(w, r, filePath)
+				os.RemoveAll(filePath)
+			}
+		} else {
+			Respond(w, nil, proxyNotAvailableError)
+		}
+	}
+}
+
+// ToStreamResponse to give stream as response
+func ToStreamResponse(handler JSONResponderF) ReqRespHandlerf {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !CheckCrossOrigin(w, r) {
+			return
+		}
+
+		if r.Method == "OPTIONS" {
+			SetupCORSResponse(w, r)
+			return
+		}
+
+		if proxyStaus() {
+			lockProxy()
+			ctx := r.Context()
+			data, err := handler(ctx, r)
+			unlockProxy()
+			if err != nil {
+				Respond(w, data, err)
+			} else {
+				filePath := data.(string)
+				content, _ := ioutil.ReadFile(filePath)
+				reader := bytes.NewReader(content)
+				fileName := filepath.Base(filePath)
+				http.ServeContent(w, r, fileName, time.Now(), reader)
 				os.RemoveAll(filePath)
 			}
 		} else {
