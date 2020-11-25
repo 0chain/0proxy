@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -200,10 +199,9 @@ func ToStreamResponse(handler JSONResponderF) ReqRespHandlerf {
 				Respond(w, data, err)
 			} else {
 				filePath := data.(string)
-				content, _ := ioutil.ReadFile(filePath)
-				reader := bytes.NewReader(content)
+				content, _ := os.Open(filePath)
 				fileName := filepath.Base(filePath)
-				http.ServeContent(w, r, fileName, time.Now(), reader)
+				http.ServeContent(w, r, fileName, time.Now(), content)
 				os.RemoveAll(filePath)
 			}
 		} else {
