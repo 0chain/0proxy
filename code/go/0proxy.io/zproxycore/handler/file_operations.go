@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -30,6 +31,10 @@ func readFile(filePath string) ([]byte, error) {
 
 func getPath(allocation, fileName string) string {
 	return filesRepo + allocation + "/" + fileName
+}
+
+func getPathForStream(allocation, fileName string, start, end int) string {
+	return filesRepo + allocation + "/" + fmt.Sprintf("%d-%d-%s", start, end, fileName)
 }
 
 func createDirIfNotExists(allocation string) {

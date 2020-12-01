@@ -5,13 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
 )
 
 var proxyAvailable = true
@@ -30,6 +30,8 @@ type ReqRespHandlerf func(w http.ResponseWriter, r *http.Request)
 * header
  */
 type JSONResponderF func(ctx context.Context, r *http.Request) (interface{}, error)
+
+type StreamResponderF func(w http.ResponseWriter, r *http.Request) (interface{}, error)
 
 /*JSONReqResponderF - a handler that takes a JSON request and responds with a json response
 * Useful for GET operation where the input is coming via url parameters
@@ -179,7 +181,7 @@ func ToFileResponse(handler JSONResponderF) ReqRespHandlerf {
 }
 
 // ToStreamResponse to give stream as response
-func ToStreamResponse(handler JSONResponderF) ReqRespHandlerf {
+func ToStreamResponse(handler StreamResponderF) ReqRespHandlerf {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !CheckCrossOrigin(w, r) {
 			return
@@ -192,17 +194,15 @@ func ToStreamResponse(handler JSONResponderF) ReqRespHandlerf {
 
 		if proxyStaus() {
 			lockProxy()
-			ctx := r.Context()
-			data, err := handler(ctx, r)
+			data, err := handler(w, r)
 			unlockProxy()
 			if err != nil {
 				Respond(w, data, err)
 			} else {
 				filePath := data.(string)
 				content, _ := os.Open(filePath)
-				fileName := filepath.Base(filePath)
-				http.ServeContent(w, r, fileName, time.Now(), content)
-				os.RemoveAll(filePath)
+				w.WriteHeader(206)
+				_, err = io.Copy(w, content)
 			}
 		} else {
 			Respond(w, nil, proxyNotAvailableError)
