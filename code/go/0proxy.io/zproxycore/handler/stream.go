@@ -37,7 +37,7 @@ func Stream(w http.ResponseWriter, r *http.Request) (string, error) {
 	numBlocks := r.FormValue("blocks_per_marker")
 	numBlocksInt, _ := strconv.Atoi(numBlocks)
 	if numBlocksInt == 0 {
-		numBlocksInt = 20
+		numBlocksInt = 10
 	}
 
 	inputRanges := r.Header.Get("Range")
@@ -123,6 +123,7 @@ func Stream(w http.ResponseWriter, r *http.Request) (string, error) {
 
 	w.Header().Set("Content-Length", strconv.Itoa(chunkEnd-chunkStart+1))
 	contentRange := fmt.Sprintf("bytes %d-%d/%d", chunkStart, chunkEnd, metaData.Size)
+	w.Header().Set("Content-Type", metaData.MimeType)
 	w.Header().Set("Content-Range", contentRange)
 	return localFilePath, nil
 }

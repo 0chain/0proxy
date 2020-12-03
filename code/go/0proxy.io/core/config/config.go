@@ -33,11 +33,12 @@ const (
 
 /*Config - all the config options passed from the command line*/
 type Config struct {
-	Port            int
-	ChainID         string
-	DeploymentMode  byte
-	SignatureScheme string
-	BlockWorker     string
+	Port                 int
+	ChainID              string
+	DeploymentMode       byte
+	SignatureScheme      string
+	BlockWorker          string
+	CleanUpWorkerMinutes int
 }
 
 /*Configuration of the system */

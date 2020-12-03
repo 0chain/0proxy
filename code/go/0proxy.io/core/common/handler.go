@@ -201,8 +201,9 @@ func ToStreamResponse(handler StreamResponderF) ReqRespHandlerf {
 			} else {
 				filePath := data.(string)
 				content, _ := os.Open(filePath)
+				defer content.Close()
 				w.WriteHeader(206)
-				_, err = io.Copy(w, content)
+				io.Copy(w, content)
 			}
 		} else {
 			Respond(w, nil, proxyNotAvailableError)

@@ -13,6 +13,7 @@ import (
 	"0proxy.io/core/logging"
 	. "0proxy.io/core/logging"
 	zc "0proxy.io/zproxycore/common"
+	"0proxy.io/zproxycore/worker"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -24,6 +25,7 @@ func initializeConfig() {
 	config.Configuration.SignatureScheme = viper.GetString("server_chain.signature_scheme")
 	config.Configuration.Port = viper.GetInt("port")
 	config.Configuration.BlockWorker = viper.GetString("block_worker")
+	config.Configuration.CleanUpWorkerMinutes = viper.GetInt("clean_up_worker_minutes")
 }
 func initHandlers(r *mux.Router) {
 	r.HandleFunc("/", HomePageHandler)
@@ -77,6 +79,9 @@ func main() {
 	common.HandleShutdown(server)
 
 	initHandlers(r)
+
+	go worker.SetupWorkers(context.Background())
+
 	startTime = time.Now().UTC()
 	Logger.Info("Ready to listen to the requests on ", zap.Any("port", config.Configuration.Port))
 	log.Fatal(server.ListenAndServe())

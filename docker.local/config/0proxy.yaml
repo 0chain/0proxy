@@ -14,3 +14,4 @@ handlers:
   rate_limit: 1 # 1 per second
 
 block_worker: http://198.18.0.98:9091
+clean_up_worker_minutes: 10
