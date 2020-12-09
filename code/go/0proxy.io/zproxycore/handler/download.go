@@ -70,10 +70,12 @@ func Download(ctx context.Context, r *http.Request) (string, error) {
 		createDirIfNotExists(allocationObj.ID)
 		localFilePath = getPath(allocationObj.ID, fileName)
 		deleletFile(localFilePath)
-
-		lookuphash, err := at.GetLookupHash()
-		if err != nil {
-			return "", common.NewError("get_lookuphash_failed", err.Error())
+		lookuphash := r.FormValue("lookup_hash")
+		if len(lookuphash) == 0 {
+			lookuphash, err = at.GetLookupHash()
+			if err != nil {
+				return "", common.NewError("get_lookuphash_failed", err.Error())
+			}
 		}
 
 		Logger.Info("Doing file download using authTicket", zap.Any("filename", fileName), zap.Any("allocation", allocationObj.ID), zap.Any("lookuphash", lookuphash))
