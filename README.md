@@ -74,6 +74,14 @@ Path: `/download`
 
 Details: https://0chain.net/page-documentation.html#tag/0proxy/paths/~1download/get
 
+### Stream
+
+To stream a file from 0chain network
+
+Path: `/stream`
+
+Details: https://0chain.net/page-documentation.html#tag/0proxy/paths/~1stream/get
+
 ### Delete
 
 To delete a file from 0chain network
