@@ -61,10 +61,12 @@ func Download(ctx context.Context, r *http.Request) (string, error) {
 		if err != nil {
 			return "", common.NewError("get_allocation_failed", err.Error())
 		}
-
-		fileName, err = at.GetFileName()
-		if err != nil {
-			return "", common.NewError("get_file_name_failed", err.Error())
+		fileName := r.FormValue("file_name")
+		if len(fileName) == 0 {
+			fileName, err = at.GetFileName()
+			if err != nil {
+				return "", common.NewError("get_file_name_failed", err.Error())
+			}
 		}
 
 		createDirIfNotExists(allocationObj.ID)
