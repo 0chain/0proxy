@@ -104,7 +104,7 @@ func Download(ctx context.Context, r *http.Request) (string, error) {
 	}
 	wg.Wait()
 	if !statusBar.success {
-		return "", common.NewError("download_status_failed", "Status bar not success")
+		return "", statusBar.err
 	}
 
 	return localFilePath, nil
