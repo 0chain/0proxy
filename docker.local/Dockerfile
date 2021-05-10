@@ -5,8 +5,8 @@ RUN apk add --update --no-cache build-base linux-headers git cmake bash perl gre
 # Install Herumi's cryptography
 RUN apk add gmp gmp-dev openssl-dev && \
     cd /tmp && \
-    wget -O - https://github.com/herumi/mcl/archive/master.tar.gz | tar xz && \
-    wget -O - https://github.com/herumi/bls/archive/master.tar.gz | tar xz && \
+    wget -O - https://github.com/herumi/mcl/archive/refs/tags/v1.34.tar.gz | tar xz && \
+    wget -O - https://github.com/herumi/bls/archive/refs/tags/v1.14.tar.gz | tar xz && \
     mv mcl* mcl && \
     mv bls* bls && \
     make -C mcl -j $(nproc) lib/libmclbn256.so install && \
