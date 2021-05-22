@@ -5,7 +5,7 @@ on:
      branches: [ gitactionsfix ]
 
 env:
-  BOX_REGISTRY: 0proxyreg/0proxy
+  PROXY_REGISTRY: 0proxyreg/0proxy
 
 jobs:
    dockerize_box:
@@ -25,8 +25,8 @@ jobs:
 
        - name: Build zproxy
          run: |
-            docker build -t $BOX_REGISTRY:$TAG -f "$DOCKERFILE_BOX" .
-           # docker push $BOX_REGISTRY:$TAG
+            docker build -t $PROXY_REGISTRY:$TAG -f "$DOCKERFILE_PROXY" .
+           # docker push $PROXY_REGISTRY:$TAG
          env:
            TAG: ${{ steps.get_version.outputs.VERSION }}
-           DOCKERFILE_BOX: "docker.local/Dockerfile"
+           DOCKERFILE_PROXY: "docker.local/Dockerfile"
