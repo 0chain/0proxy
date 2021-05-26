@@ -44,7 +44,7 @@ func (s *StatusBar) Started(allocationID, filePath string, op int, totalBytes in
 }
 
 // InProgress for statusBar
-func (s *StatusBar) InProgress(allocationID, filePath string, op int, completedBytes int) {
+func (s *StatusBar) InProgress(allocationID, filePath string, op int, completedBytes int, bytes []byte) {
 	s.b.Set(completedBytes)
 }
 
